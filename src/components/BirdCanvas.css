@@ -11,10 +11,14 @@
   margin: 50px;
 }
 
-.BirdColorPalette {
+.BirdColorPalette, .BirdToolbar {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.BirdLink {
+  margin-bottom: 10px;
 }
 
 .BirdColorOption {

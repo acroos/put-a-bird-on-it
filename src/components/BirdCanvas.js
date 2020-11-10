@@ -5,6 +5,7 @@ class BirdCanvas extends React.Component {
   constructor(props) {
     super(props);
     this.canvasRef = React.createRef();
+
     this.state = {
       drawing: false,
       points: [],
@@ -16,6 +17,8 @@ class BirdCanvas extends React.Component {
     this.endDrawing = this.endDrawing.bind(this);
     this.redraw = this.redraw.bind(this);
     this.changeColor = this.changeColor.bind(this);
+    this.save = this.save.bind(this);
+    this.clear = this.clear.bind(this);
   }
 
   startDrawing(event) {
@@ -26,10 +29,9 @@ class BirdCanvas extends React.Component {
       drawing: true,
       points: [
         ...this.state.points,
-        { x: xPoint, y: yPoint, color: this.state.color },
+        { x: xPoint, y: yPoint, color: this.state.color, start: true },
       ],
     });
-    console.log(this.canvasRef);
   }
 
   continueDrawing(event) {
@@ -40,7 +42,7 @@ class BirdCanvas extends React.Component {
       this.setState({
         points: [
           ...this.state.points,
-          { x: xPoint, y: yPoint, color: this.state.color },
+          { x: xPoint, y: yPoint, color: this.state.color, start: false },
         ],
       });
     }
@@ -65,7 +67,7 @@ class BirdCanvas extends React.Component {
     for (let i = 0; i < points.length; i++) {
       context.strokeStyle = points[i].color;
       context.beginPath();
-      if (i === 0) {
+      if (points[i].start) {
         context.moveTo(points[i].x - 1, points[i].y);
       } else {
         context.moveTo(points[i - 1].x, points[i - 1].y);
@@ -81,9 +83,42 @@ class BirdCanvas extends React.Component {
     this.setState({ color: colorCode });
   }
 
+  save(event) {
+    const link = event.target;
+    const canvas = this.canvasRef.current;
+
+    link.href = canvas
+      .toDataURL("image/png")
+      .replace("image/png", "image/octet-stream");
+  }
+
+  clear() {
+    this.setState(
+      {
+        color: "black",
+        points: [],
+        drawing: false,
+      },
+      this.redraw
+    );
+  }
+
   render() {
     return (
       <div className="CanvasContainer">
+        <div className="BirdToolbar">
+          <a
+            className="BirdLink"
+            href="#"
+            download="Bird.png"
+            onClick={this.save}
+          >
+            Save
+          </a>
+          <a className="BirdLink" href="#" onClick={this.clear}>
+            Clear
+          </a>
+        </div>
         <canvas
           className="BirdCanvas"
           id="birdCanvas"
