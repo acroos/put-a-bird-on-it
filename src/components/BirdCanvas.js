@@ -7,8 +7,7 @@ class BirdCanvas extends React.Component {
     this.canvasRef = React.createRef();
 
     this.state = {
-      drawing: false,
-      points: [],
+      lastPoint: null,
       color: "black",
     };
 
@@ -16,6 +15,7 @@ class BirdCanvas extends React.Component {
     this.continueDrawing = this.continueDrawing.bind(this);
     this.endDrawing = this.endDrawing.bind(this);
     this.redraw = this.redraw.bind(this);
+    this.drawNext = this.drawNext.bind(this);
     this.changeColor = this.changeColor.bind(this);
     this.save = this.save.bind(this);
     this.clear = this.clear.bind(this);
@@ -26,33 +26,39 @@ class BirdCanvas extends React.Component {
     const yPoint = event.pageY - this.canvasRef.current.offsetTop;
 
     this.setState({
-      drawing: true,
-      points: [
-        ...this.state.points,
-        { x: xPoint, y: yPoint, color: this.state.color, start: true },
-      ],
+      lastPoint: { x: xPoint, y: yPoint, color: this.state.color },
     });
   }
 
   continueDrawing(event) {
+    if (!this.state.lastPoint) {
+      return;
+    }
+
     const xPoint = event.pageX - this.canvasRef.current.offsetLeft;
     const yPoint = event.pageY - this.canvasRef.current.offsetTop;
 
-    if (this.state.drawing) {
-      this.setState({
-        points: [
-          ...this.state.points,
-          { x: xPoint, y: yPoint, color: this.state.color, start: false },
-        ],
-      });
-    }
-
-    this.redraw();
+    this.drawNext(xPoint, yPoint);
   }
 
   endDrawing() {
-    this.setState({ drawing: false });
-    this.redraw();
+    this.setState({ lastPoint: null });
+  }
+
+  drawNext(x, y) {
+    const { lastPoint } = this.state;
+
+    let context = this.canvasRef.current.getContext("2d");
+    context.lineJoin = "round";
+    context.lineWidth = 5;
+    context.strokeStyle = lastPoint.color;
+    context.beginPath();
+    context.moveTo(lastPoint.x, lastPoint.y);
+    context.lineTo(x, y);
+    context.closePath();
+    context.stroke();
+
+    this.setState({ lastPoint: { x: x, y: y, color: this.state.color } });
   }
 
   redraw() {
@@ -93,14 +99,13 @@ class BirdCanvas extends React.Component {
   }
 
   clear() {
-    this.setState(
-      {
-        color: "black",
-        points: [],
-        drawing: false,
-      },
-      this.redraw
-    );
+    let context = this.canvasRef.current.getContext("2d");
+    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
+    this.setState({
+      color: "black",
+      lastPoint: null,
+    });
   }
 
   render() {
