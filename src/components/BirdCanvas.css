@@ -1,0 +1,59 @@
+.CanvasContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.BirdCanvas {
+  display: inline-block;
+  border: 1px solid black;
+  background: rgba(10, 10, 10, 0.1);
+  margin: 50px;
+}
+
+.BirdColorPalette {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.BirdColorOption {
+  border-radius: 100%;
+  width: 2em;
+  height: 2em;
+  border: 1px solid grey;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.Red {
+  background-color: red;
+}
+
+.Orange {
+  background-color: orange;
+}
+
+.Yellow {
+  background-color: yellow;
+}
+
+.Green {
+  background-color: green;
+}
+
+.Blue {
+  background-color: blue;
+}
+
+.Indigo {
+  background-color: indigo;
+}
+
+.Violet {
+  background-color: violet;
+}
+
+.Black {
+  background-color: black;
+}
